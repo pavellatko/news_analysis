@@ -23,8 +23,27 @@ class NewsParser:
         except FileExistsError:
             return None
 
+    @staticmethod
+    def _clear_str(string):
+        return string.strip().replace('\xa0', ' ')
+
+    def get_date(self):
+        date_div = self.soup.find('div', {'class': 'date'})
+        time = date_div.strong.string
+        day = date_div.span.string
+        return time.strip() + ' ' + day.strip()
+
     def get_header(self):
-        pass
+        return self._clear_str(self.soup.find('h1').string)
+
+    def get_text(self):
+        news_block = self.soup.find('div', {'class': 'typical'}).span
+        news_pars = news_block.find_all('p')
+        parsed_pars = []
+        for par in news_pars:
+            parsed_pars.append(self._clear_str(par.string))
+        return '\n'.join(parsed_pars)
+
 
     def __init__(self, id):
         self.id = id
@@ -34,4 +53,6 @@ class NewsParser:
             'header': None,
             'text': None
         }
+        self.html = self._open_news()
+        self.soup = BeautifulSoup(self.html, 'html.parser')
 
