@@ -32,6 +32,7 @@ class NewsParser:
     def _clear_str(string):
         return string.strip().replace('\xa0', ' ')
 
+
     def get_date(self):
         date_div = self.soup.find('div', {'class': 'date'})
         time = date_div.strong.string
@@ -46,7 +47,8 @@ class NewsParser:
         news_pars = news_block.find_all('p')
         parsed_pars = []
         for par in news_pars:
-            parsed_pars.append(self._clear_str(par.string))
+            string = par.text
+            parsed_pars.append(self._clear_str(string))
         return '\n'.join(parsed_pars)
 
     def __init__(self, id):

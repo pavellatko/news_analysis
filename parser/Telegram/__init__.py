@@ -1,12 +1,13 @@
 import logging
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Updater, CommandHandler, CallbackQueryHandler
-from Database.data_handler import UserAdder
+from Database.data_handler import UserAdder, NewsLoader
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 
 user_adder = UserAdder()
+news_loader = NewsLoader()
 
 
 def read(bot, update):
@@ -28,11 +29,26 @@ def start(bot, update):
 
 def button(bot, update):
     query = update.callback_query
+    chat_id = query.message.chat_id
+    if query.data.count('read') == 1:
+        send_news_headers(bot, update, news_loader.unread_news(
+            chat_id, int(query.data[4:])), chat_id)
+    elif query.data.count('full') == 1:
+        send_news_text(bot, update, query.data[4:], chat_id)
 
-    bot.editMessageText(text="Selected option: %s" % query.data,
-                        chat_id=query.message.chat_id,
-                        message_id=query.message.message_id)
 
+def send_news_headers(bot, update, news, chat_id):
+    for news_id, date, header in news:
+        user_adder.add_read_entry(news_id, chat_id)
+        text = '\n'.join((date, header, ))
+
+        keyboard = [[InlineKeyboardButton("Читать полностью", callback_data='full' + str(news_id))]]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        bot.sendMessage(chat_id=chat_id, text=text, reply_markup=reply_markup)
+
+
+def send_news_text(bot, update, news_id, chat_id):
+    bot.sendMessage(chat_id=chat_id, text=news_loader.get_news_full_text(news_id))
 
 
 def error(bot, update, error):
@@ -47,9 +63,6 @@ updater.dispatcher.add_handler(CommandHandler('read', read))
 updater.dispatcher.add_handler(CallbackQueryHandler(button))
 updater.dispatcher.add_error_handler(error)
 
-# Start the Bot
-updater.start_polling()
-
-# Run the bot until the user presses Ctrl-C or the process receives SIGINT,
-# SIGTERM or SIGABRT
-updater.idle()
+def run():
+    updater.start_polling()
+    updater.idle()

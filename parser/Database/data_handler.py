@@ -28,9 +28,11 @@ class UserAdder:
         self.session = connect_db()
 
     def add_user(self, id):
-        new_user = Users(id=id)
-        self.session.add(new_user)
-        self.session.commit()
+        ev = self.session.query(Users.id).filter(Users.id==id).count()
+        if not ev:
+            new_user = Users(id=id)
+            self.session.add(new_user)
+            self.session.commit()
 
     def add_read_entry(self, news_id, user_id):
         read_entry = ReadNews(user_id=user_id, news_id=news_id)
@@ -47,4 +49,11 @@ class NewsLoader:
         query = self.session.query(News.id, News.date, News.header).\
             filter(News.id.notin_(subquery)).order_by(News.id.desc()).limit(count)
 
-        return reversed(self.session.execute(query).fetchall())
+        return self.session.execute(query).fetchall()
+
+    def get_news_full_text(self, id):
+        query = self.session.query(News.date, News.header, News.text).filter(News.id==id).one()
+        return '\n\n'.join(query)
+
+    def latest_news(self):
+        return self.session.query(News.id).order_by(News.id.desc()).first()[0]
