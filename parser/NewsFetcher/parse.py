@@ -1,7 +1,9 @@
-from bs4 import BeautifulSoup
-from config import *
 from pathlib import Path
-from downloader import download_news
+
+from bs4 import BeautifulSoup
+
+from NewsFetcher.downloader import download_news
+from config import *
 
 
 def news_path(id):
@@ -14,7 +16,10 @@ class NewsParser:
     def _open_news(self):
         path = news_path(self.id)
         if not Path(path).is_file():
-            download_news(self.id)
+            try:
+                download_news(self.id)
+            except Exception:
+                return None
         try:
             file = open(news_path(self.id))
             html = ''.join(file.readlines())
@@ -44,15 +49,17 @@ class NewsParser:
             parsed_pars.append(self._clear_str(par.string))
         return '\n'.join(parsed_pars)
 
-
     def __init__(self, id):
         self.id = id
-        self._open_news()
         self.news_entry = {
             'date': None,
             'header': None,
             'text': None
         }
         self.html = self._open_news()
-        self.soup = BeautifulSoup(self.html, 'html.parser')
+        if self.html is None:
+            self.success = False
+        else:
+            self.success = True
+            self.soup = BeautifulSoup(self.html, 'html.parser')
 
