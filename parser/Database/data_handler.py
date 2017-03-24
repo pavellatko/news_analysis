@@ -36,3 +36,15 @@ class UserAdder:
         read_entry = ReadNews(user_id=user_id, news_id=news_id)
         self.session.add(read_entry)
         self.session.commit()
+
+
+class NewsLoader:
+    def __init__(self):
+        self.session = connect_db()
+
+    def unread_news(self, id, count):
+        subquery = self.session.query(ReadNews.news_id).filter(ReadNews.user_id==id)
+        query = self.session.query(News.id, News.date, News.header).\
+            filter(News.id.notin_(subquery)).order_by(News.id.desc()).limit(count)
+
+        return reversed(self.session.execute(query).fetchall())
