@@ -63,5 +63,5 @@ class NewsParser:
             self.success = False
         else:
             self.success = True
-            self.soup = BeautifulSoup(self.html, 'html.parser')
+            self.soup = BeautifulSoup(self.html, 'html.logic')
 
