@@ -48,7 +48,10 @@ def send_news_headers(bot, update, news, chat_id):
 
 
 def send_news_text(bot, update, news_id, chat_id):
-    bot.sendMessage(chat_id=chat_id, text=news_loader.get_news_full_text(news_id))
+    query = update.callback_query
+    bot.editMessageText(chat_id=chat_id,
+                        text=news_loader.get_news_full_text(news_id),
+                        message_id=query.message.message_id)
 
 
 def error(bot, update, error):
