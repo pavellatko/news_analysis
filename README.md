@@ -1,7 +1,11 @@
 # Telegram-бот для обсуждения новостей
+
+# [Отчет](https://github.com/pavellatko/news_analysis/blob/master/REPORT.md)
+
 ### Проект Латышева Павла, 153 группа
 
 ## Существующие решения
+
 Разработка чат-ботов является активно развивающейся темой. Существует большое количество эксперементальных проектов от различных компаний, таких как Google, Microsoft и других. Существуют научные работы, посвященные данной теме, например, [Building End-To-End Dialogue Systems Using Generative Hierarchical Neural Network Models](https://arxiv.org/abs/1507.04808).
 
 ## Описание проекта
