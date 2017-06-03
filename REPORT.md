@@ -29,3 +29,5 @@
 Бот поддерживает диалог с пользователем:
 
 ![alt_text](https://pp.userapi.com/c836723/v836723018/43824/-_MA41pBhXE.jpg)
+
+![alt_text](https://pp.userapi.com/c836723/v836723018/4382b/2YYwF5jkr00.jpg)
