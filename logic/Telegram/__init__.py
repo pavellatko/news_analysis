@@ -1,13 +1,19 @@
 import logging
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import Updater, CommandHandler, CallbackQueryHandler
+from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, Filters, MessageHandler
 from Database.data_handler import UserAdder, NewsLoader
+from Chatter import chatbot
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 
 user_adder = UserAdder()
 news_loader = NewsLoader()
+
+
+def conversation(bot, update):
+    reply = chatbot.get_response(update.message.text)
+    update.message.reply_text(str(reply))
 
 
 def read(bot, update):
@@ -64,6 +70,7 @@ updater = Updater("335128365:AAGj-kw7xdSqD5zcVnhRiXnuUGBNpJB4F0g")
 updater.dispatcher.add_handler(CommandHandler('start', start))
 updater.dispatcher.add_handler(CommandHandler('read', read))
 updater.dispatcher.add_handler(CallbackQueryHandler(button))
+updater.dispatcher.add_handler(MessageHandler(Filters.text, conversation))
 updater.dispatcher.add_error_handler(error)
 
 def run():
